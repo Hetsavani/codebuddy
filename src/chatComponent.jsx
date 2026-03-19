@@ -12,7 +12,6 @@ const ChatComponent = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [isDarkMode, setIsDarkMode] = useState(false)
   const chatRef = useRef(null);
-  const codeRef = useRef(null);
 
   const programmingLanguage = 'no data - detect from code' // Or get this from your app's state/props
 
@@ -84,7 +83,7 @@ const ChatComponent = () => {
       history: []
     });
 
-    codeRef.current = document.querySelectorAll('.view-line');
+    // codeRef.current = ;
 
     console.log("✅ Initialized with:", modelName);
 
@@ -92,7 +91,7 @@ const ChatComponent = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    const extractedCode = extractCode(codeRef.current)
+    const extractedCode = extractCode(document.querySelectorAll('.view-line'))
 
     if (inputMessage.trim() !== '') {
       setMessages(prev => [...prev, { text: inputMessage, sender: 'user' }])
@@ -102,7 +101,6 @@ const ChatComponent = () => {
         const result = await chatRef.current.sendMessage(
           inputMessage + "\n\nUser code:\n" + extractedCode
         );
-
         const text = result.response.text();
 
         setMessages(prev => [...prev, { text, sender: 'ai' }]);
@@ -434,7 +432,6 @@ const TypewriterEffect = ({ text }) => {
       const timeoutId = setTimeout(() => {
         // setDisplayText((value) => value + text.charAt(index.current));
         setDisplayText(displayText + text.charAt(index.current));
-        // console.log(text.charAt(index.current))
         index.current += 1;
       }, typingSpeed);
 
@@ -496,6 +493,7 @@ const LoadingAnimation = () => (
 
 function extractCode(htmlContent) {
   // Extract the text content of each line with the 'view-line' class
+  
   const code = Array.from(htmlContent)
     .map((line) => line.textContent || '') // Ensure textContent is not null
     .join('\n');

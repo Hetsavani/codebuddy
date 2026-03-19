@@ -35,17 +35,17 @@
 import { useState, useEffect } from "react";
 
 const GEMINI_MODELS = [
-  { value: "gemini-3.1-pro-preview", label: "Gemini 3.1 Pro" },
-  { value: "gemini-3.1-flash-preview", label: "Gemini 3.1 Flash" },
-  { value: "gemini-2.5-pro", label: "Gemini 2.5 Pro" },
-  { value: "gemini-2.0-flash", label: "Gemini 2.0 Flash" },
-  { value: "gemini-2.0-flash-lite", label: "Gemini 2.0 Flash-Lite" },
-  { value: "gemini-3-flash", label: "Gemini 3 Flash" }, // try
-  { value: "gemini-3.1-flash-lite", label: "Gemini 3.1 Flash Lite" }, // try
-  { value: "gemini-2.5-flash", label: "Gemini 2.5 Flash" }, // used in portfolio
-  { value: "gemini-2.5-flash-lite", label: "Gemini 2.5 Flash Lite" }, // try
-  { value: "gemini-2.5-flash-preview-tts", label: "Gemini 2.5 Flash Preview TTS" }, // try
-  { value: "gemini-2.0-flash-thinking-exp", label: "Gemini 2.0 Flash Thinking" }
+  { value: "gemini-3.1-pro-preview", label: "Gemini 3.1 Pro", isFree: false},
+  { value: "gemini-3.1-flash-preview", label: "Gemini 3.1 Flash", isFree: false },
+  { value: "gemini-2.5-pro", label: "Gemini 2.5 Pro", isFree: false },
+  { value: "gemini-2.0-flash", label: "Gemini 2.0 Flash", isFree: false },
+  { value: "gemini-2.0-flash-lite", label: "Gemini 2.0 Flash-Lite", isFree: false },
+  { value: "gemini-3-flash", label: "Gemini 3 Flash", isFree: false },
+  { value: "gemini-2.0-flash-thinking-exp", label: "Gemini 2.0 Flash Thinking", isFree: false },
+  { value: "gemini-3.1-flash-lite", label: "Gemini 3.1 Flash Lite", isFree: false },
+  { value: "gemini-2.5-flash", label: "Gemini 2.5 Flash", isFree: true },
+  { value: "gemini-2.5-flash-lite", label: "Gemini 2.5 Flash Lite", isFree: true },
+  { value: "gemini-2.5-flash-preview-tts", label: "Gemini 2.5 Flash Preview TTS", isFree: true }
 ];
 
 const styles = `
@@ -371,6 +371,7 @@ const styles = `
   .toast {
     position: fixed;
     bottom: 16px; left: 50%;
+    min-width: 300px;
     transform: translateX(-50%) translateY(20px);
     opacity: 0;
     transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
@@ -392,6 +393,13 @@ const styles = `
     gap: 8px;
     white-space: nowrap;
     box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    align-items: flex-start;
+  }
+
+  .wrap-text {
+    white-space: normal;     /* allow wrapping */
+    word-break: break-word;  /* break long words */
+    overflow-wrap: anywhere; /* handle long tokens (like API keys) */
   }
   .toast.success .toast-inner { border: 1px solid rgba(61,255,160,0.3); color: var(--green); }
   .toast.error   .toast-inner { border: 1px solid rgba(255,91,91,0.3);  color: var(--red);   }
@@ -577,7 +585,7 @@ export default function App() {
                 disabled={loading}
               >
                 {GEMINI_MODELS.map(m => (
-                  <option key={m.value} value={m.value}>{m.label}</option>
+                  <option key={m.value} value={m.value}>{m.label} {m.isFree? "- (Free Tier)" : ""}</option>
                 ))}
               </select>
               <span className="select-arrow">
@@ -610,7 +618,7 @@ export default function App() {
 
         {/* ── Toast ── */}
         <div className={`toast ${toast.show ? "show" : ""} ${toast.type}`}>
-          <div className="toast-inner">
+          <div className="toast-inner wrap-text">
             {toast.type === "success" && (
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                 <polyline points="20 6 9 17 4 12" />
@@ -638,7 +646,7 @@ export default function App() {
           Built for LeetCode · Powered by Gemini ⚡
         </div>
       </div>
-      
-      </>
+
+    </>
   );
 }

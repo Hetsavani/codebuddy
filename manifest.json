@@ -1,0 +1,20 @@
+{
+  "manifest_version": 3,
+  "name": "Codebuddy",
+  "version": "1.0",
+  "description": "A simple Chrome extension.",
+  "action": {
+    "default_popup": "index.html"
+  },
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://leetcode.com/problems/*"],
+      "js": ["src/content.jsx"]
+    }
+  ]
+}

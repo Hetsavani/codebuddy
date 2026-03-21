@@ -118,13 +118,14 @@ const ChatComponent = () => {
     setIsDarkMode(!isDarkMode)
   }
 
+
   const Loader = () => {
     const lineStyle = (width) => ({
       width: `${width}px`,
       height: "15px",
       // background: ,
       background:
-        isDarkMode ? "linear-gradient(90deg,#0001 33%,#0005 50%,#0001 66%) #f2f2f2" : "linear-gradient(90deg, rgba(255, 255, 255, 0.1) 33%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0.1) 66%) #1a1a1a",
+        !isDarkMode ? "linear-gradient(90deg,#0001 33%,#0005 50%,#0001 66%) #f2f2f2" : "linear-gradient(90deg, rgba(255, 255, 255, 0.1) 33%, rgba(255, 255, 255, 0.5) 50%, rgba(255, 255, 255, 0.1) 66%) #1a1a1a",
       backgroundSize: "300% 100%",
       animation: "l1 1s infinite linear",
       borderRadius: "10px",
@@ -302,6 +303,17 @@ const ChatComponent = () => {
     opacity: 0.5;
   }
 
+  /* ================= Brand Text ================= */
+    .brand-name {
+    line-height: 1;
+    font-size: 17px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    background: ${isDarkMode ? "linear-gradient(90deg, #fff 0%, #8ab4ff 100%)" : "linear-gradient(90deg, #1e3566 0%, #4f8ef7 100%);"};
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
   /* ================= TOGGLE SWITCH FIX ================= */
   .form-check-input {
     cursor: pointer;
@@ -339,9 +351,9 @@ const ChatComponent = () => {
   }
 
   .msg-bubble.ai {
-    background: #151820;
-    color: #e8eaf0;
-    border: 1px solid #2e3650;
+    background: ${isDarkMode ? "#151820" : "#c9c9c9"};
+    color: ${isDarkMode ? "#e8eaf0" : "black"};
+    border: 1px solid ${isDarkMode ? "#2e3650" : "#a9a9a9"};
     border-bottom-left-radius: 6px;
   }
 
@@ -350,16 +362,16 @@ const ChatComponent = () => {
     border-radius: 999px !important;
     border: 1px solid #2e3650 !important;
     padding: 10px 14px;
-    background-color: #0d0f14 !important;
-    color: #e8eaf0 !important;
+    background-color: ${isDarkMode ? " #0d0f14 " : "#c9c9c9"} !important;
+    color: ${isDarkMode ? "#e8eaf0" : "black"} !important;
     transition: all 0.2s ease;
     outline: none !important;
     box-shadow: none !important;
   }
 
   .chat-input:focus {
-    border-color: #4f8ef7 !important;
-    box-shadow: 0 0 0 1.5px rgba(79,142,247,0.35) !important;
+    border-color: ${isDarkMode ? "#4f8ef7" : "#5d5d5d"} !important;
+    box-shadow: 0 0 0 1.5px ${isDarkMode ? "rgba(79,142,247,0.35)" : "rgba(42, 42, 42, 0.35)"} !important;
   }
 
   .chat-input::placeholder {
@@ -368,8 +380,8 @@ const ChatComponent = () => {
 
   /* ================= FORCE OVERRIDE BOOTSTRAP ================= */
   input.form-control.chat-input:focus {
-    box-shadow: 0 0 0 1.5px rgba(79,142,247,0.35) !important;
-    border-color: #4f8ef7 !important;
+    box-shadow: 0 0 0 1.5px ${isDarkMode ? "rgba(79,142,247,0.35)" : "rgba(42, 42, 42, 0.35)"} !important;
+    border-color: ${isDarkMode ? "#4f8ef7" : "#5d5d5d"} !important;
   }
 
   /* ================= SMALL POLISH ================= */
@@ -407,18 +419,20 @@ const ChatComponent = () => {
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.3 }}
             className="position-absolute bottom-100 end-0 mb-4"
-            style={{ backgroundColor: !isDarkMode ? "#1a1a1a" : "white" }}
+            style={{ backgroundColor: isDarkMode ? "#1a1a1a" : "whitesmoke", color: isDarkMode ? "#e8eaf0" : "black", borderRadius: "10px" }}
           >
             <div className="card shadow" style={{ width: '24rem' }}>
               <div className="card-header d-flex justify-content-between align-items-center py-2">
-                <h5 className="card-title fs-4 fw-bold mb-0">AI Chat</h5>
+                <h5 className="card-title fs-4 fw-bold mb-0 brand-name">CodeBuddy</h5>
                 <div className="d-flex align-items-center gap-2">
                   <Sun className="small" style={{ width: '1rem', height: '1rem' }} />
                   <div className="form-check form-switch">
                     <input
                       className="form-check-input"
                       type="checkbox"
-                      checked={isDarkMode}
+                      role="switch"
+                      id="flexSwitchCheckChecked"
+                      checked={isDarkMode ? true : false}
                       onChange={toggleDarkMode}
                     />
                   </div>

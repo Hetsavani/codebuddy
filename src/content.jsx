@@ -1,20 +1,3 @@
-// import "./index.css";
-
-// import { createRoot } from "react-dom/client";
-// import { StrictMode } from "react";
-// // import {}
-// const root = document.createElement("div");
-// root.id = "ai_assistant";
-// document.body.append(root);
-
-// createRoot(root).render(
-//   <StrictMode>
-//     <div className="App">
-//       <h1>Hello CodeBuddy</h1>
-//     </div>
-//   </StrictMode>
-// );
-
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import ChatComponent from './chatComponent';

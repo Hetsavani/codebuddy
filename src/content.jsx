@@ -4,6 +4,8 @@ import ChatComponent from './chatComponent';
 
 const root = document.createElement('div');
 root.id = 'codebuddy';
+root.style.position = 'fixed';
+root.style.zIndex = '2147483647';
 
 // Attach a Shadow DOM to the root
 const shadowRoot = root.attachShadow({ mode: 'open' });
@@ -11,7 +13,7 @@ document.body.appendChild(root);
 
 // Create a container inside the Shadow DOM for React
 const shadowContainer = document.createElement('div');
-shadowContainer.style.zIndex = 1000000000000
+shadowContainer.style.zIndex = 2147483647
 shadowRoot.appendChild(shadowContainer);
 
 // Function to inject Bootstrap CSS and Icons into the Shadow DOM

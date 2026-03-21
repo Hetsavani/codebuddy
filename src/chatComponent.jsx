@@ -61,7 +61,7 @@ const ChatComponent = () => {
       .replace(/{{problem_statement}}/gi, problemStatement)
       .replace(/{{programming_language}}/g, programmingLanguage)
       .replace(/{{topics}}/g, topics || "Not available")
-      .replace(/{{hints}}/g, '\n'+hints || "No hints available");
+      .replace(/{{hints}}/g, '\n' + hints || "No hints available");
 
     const model = genAI.getGenerativeModel({
       model: modelName,
@@ -82,7 +82,7 @@ const ChatComponent = () => {
 
   const getHints = () => {
     const hintNodes = document.querySelectorAll('.text-body.text-sd-foreground');
-    
+
     return Array.from(hintNodes)
       .map(node => node.textContent.trim())
       .filter(text => text.length > 0);
@@ -114,8 +114,8 @@ const ChatComponent = () => {
   }
 
   const toggleDarkMode = () => {
+    // document.documentElement.classList.toggle('dark')
     setIsDarkMode(!isDarkMode)
-    document.documentElement.classList.toggle('dark')
   }
 
   const Loader = () => {
@@ -156,153 +156,233 @@ const ChatComponent = () => {
     >
       <div className={`fixed bottom-4 right-4 ${isDarkMode ? 'dark' : ''}`}>
         <style jsx>{`
-        @keyframes animStar {
-          from { transform: translateY(0); }
-          to { transform: translateY(-135rem); }
-        }
-        @keyframes animStarRotate {
-          from { transform: rotate(360deg); }
-          to { transform: rotate(0); }
-        }
-        @keyframes gradient_301 {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-        @keyframes pulse_3011 {
-          0% {
-            transform: scale(0.75);
-            box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.7);
-          }
-          70% {
-            transform: scale(1);
-            box-shadow: 0 0 0 10px rgba(0, 0, 0, 0);
-          }
-          100% {
-            transform: scale(0.75);
-            box-shadow: 0 0 0 0 rgba(0, 0, 0, 0);
-          }
-        }
+  @keyframes animStar {
+    from { transform: translateY(0); }
+    to { transform: translateY(-135rem); }
+  }
+  @keyframes animStarRotate {
+    from { transform: rotate(360deg); }
+    to { transform: rotate(0); }
+  }
+  @keyframes gradient_301 {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  @keyframes pulse_3011 {
+    0% {
+      transform: scale(0.75);
+      box-shadow: 0 0 0 0 rgba(79,142,247,0.4);
+    }
+    70% {
+      transform: scale(1);
+      box-shadow: 0 0 0 10px rgba(79,142,247,0);
+    }
+    100% {
+      transform: scale(0.75);
+      box-shadow: 0 0 0 0 rgba(79,142,247,0);
+    }
+  }
 
-        .my-btn {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          width: 10rem;
-          overflow: hidden;
-          height: 3rem;
-          background-size: 300% 300%;
-          backdrop-filter: blur(1rem);
-          border-radius: 5rem;
-          transition: 0.5s;
-          animation: gradient_301 5s ease infinite;
-          border: double 4px transparent;
-          background-image: linear-gradient(#212121, #212121), 
-            linear-gradient(137.48deg, #ffdb3b 10%, #fe53bb 45%, #8f51ea 67%, #0044ff 87%);
-          background-origin: border-box;
-          background-clip: content-box, border-box;
-          position: relative;
-        }
+  .my-btn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 10rem;
+    overflow: hidden;
+    height: 3rem;
+    background-size: 300% 300%;
+    backdrop-filter: blur(1rem);
+    border-radius: 5rem;
+    transition: 0.5s;
+    animation: gradient_301 5s ease infinite;
+    border: double 4px transparent;
 
-        .my-container-stars {
-          position: absolute;
-          z-index: -1;
-          width: 100%;
-          height: 100%;
-          overflow: hidden;
-          transition: 0.5s;
-          backdrop-filter: blur(1rem);
-          border-radius: 5rem;
-        }
+    /* ✅ ONLY THIS GRADIENT UPDATED */
+    background-image: linear-gradient(#212121, #212121), 
+      linear-gradient(137.48deg, #4f8ef7 10%, #8ab4ff 45%, #2e3650 67%, #1e3566 87%);
 
-        .my-strong {
-          z-index: 2;
-          font-family: 'Avalors Personal Use';
-          font-size: 12px;
-          letter-spacing: 5px;
-          color: #FFFFFF;
-          text-shadow: 0 0 4px white;
-        }
+    background-origin: border-box;
+    background-clip: content-box, border-box;
+    position: relative;
+  }
 
-        .my-glow {
-          position: absolute;
-          display: flex;
-          width: 12rem;
-        }
+  .my-container-stars {
+    position: absolute;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    transition: 0.5s;
+    backdrop-filter: blur(1rem);
+    border-radius: 5rem;
+  }
 
-        .my-circle {
-          width: 100%;
-          height: 30px;
-          filter: blur(2rem);
-          animation: pulse_3011 4s infinite;
-          z-index: -1;
-        }
+  .my-strong {
+    z-index: 2;
+    font-family: 'Avalors Personal Use';
+    font-size: 12px;
+    letter-spacing: 5px;
+    color: #FFFFFF;
+    text-shadow: 0 0 4px white;
+  }
 
-        .my-circle:nth-of-type(1) {
-          background: rgba(254, 83, 186, 0.636);
-        }
+  .my-glow {
+    position: absolute;
+    display: flex;
+    width: 12rem;
+  }
 
-        .my-circle:nth-of-type(2) {
-          background: rgba(142, 81, 234, 0.704);
-        }
+  .my-circle {
+    width: 100%;
+    height: 30px;
+    filter: blur(2rem);
+    animation: pulse_3011 4s infinite;
+    z-index: -1;
+  }
 
-        .my-btn:hover .my-container-stars {
-          z-index: 1;
-          background-color: #212121;
-        }
+  /* ✅ Glow colors updated to match blue theme */
+  .my-circle:nth-of-type(1) {
+    background: rgba(79,142,247,0.4);
+  }
 
-        .my-btn:hover {
-          transform: scale(1.1)
-        }
+  .my-circle:nth-of-type(2) {
+    background: rgba(138,180,255,0.35);
+  }
 
-        .my-btn:active {
-          border: double 4px #FE53BB;
-          background-origin: border-box;
-          background-clip: content-box, border-box;
-          animation: none;
-        }
+  .my-btn:hover .my-container-stars {
+    z-index: 1;
+    background-color: #212121;
+  }
 
-        .my-btn:active .my-circle {
-          background: #FE53BB;
-        }
+  .my-btn:hover {
+    transform: scale(1.1)
+  }
 
-        .my-stars {
-          position: relative;
-          background: transparent;
-          width: 200rem;
-          height: 200rem;
-        }
+  .my-btn:active {
+    border: double 4px #4f8ef7;
+    background-origin: border-box;
+    background-clip: content-box, border-box;
+    animation: none;
+  }
 
-        .my-stars::after {
-          content: "";
-          position: absolute;
-          top: -10rem;
-          left: -100rem;
-          width: 100%;
-          height: 100%;
-          animation: animStarRotate 90s linear infinite;
-          background-image: radial-gradient(#ffffff 1px, transparent 1%);
-          background-size: 50px 50px;
-        }
+  .my-btn:active .my-circle {
+    background: #4f8ef7;
+  }
 
-        .my-stars::before {
-          content: "";
-          position: absolute;
-          top: 0;
-          left: -50%;
-          width: 170%;
-          height: 500%;
-          animation: animStar 60s linear infinite;
-          background-image: radial-gradient(#ffffff 1px, transparent 1%);
-          background-size: 50px 50px;
-          opacity: 0.5;
-        }
+  .my-stars {
+    position: relative;
+    background: transparent;
+    width: 200rem;
+    height: 200rem;
+  }
 
-        :global(.dark) .my-btn {
-          background-image: linear-gradient(#1a1a1a, #1a1a1a), 
-            linear-gradient(137.48deg, #ffdb3b 10%, #fe53bb 45%, #8f51ea 67%, #0044ff 87%);
-        }
-      `}</style>
+  .my-stars::after {
+    content: "";
+    position: absolute;
+    top: -10rem;
+    left: -100rem;
+    width: 100%;
+    height: 100%;
+    animation: animStarRotate 90s linear infinite;
+    background-image: radial-gradient(#ffffff 1px, transparent 1%);
+    background-size: 50px 50px;
+  }
+
+  .my-stars::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -50%;
+    width: 170%;
+    height: 500%;
+    animation: animStar 60s linear infinite;
+    background-image: radial-gradient(#ffffff 1px, transparent 1%);
+    background-size: 50px 50px;
+    opacity: 0.5;
+  }
+
+  /* ================= TOGGLE SWITCH FIX ================= */
+  .form-check-input {
+    cursor: pointer;
+    background-color: #2e3650 !important;
+    border-color: #4f8ef7 !important;
+  }
+
+  .form-check-input:checked {
+    background-color: #4f8ef7 !important;
+    border-color: #4f8ef7 !important;
+  }
+
+  .form-check-input:focus {
+    box-shadow: 0 0 0 2px rgba(79,142,247,0.3) !important;
+    border-color: #4f8ef7 !important;
+  }
+
+  /* ================= CHAT BUBBLES ================= */
+  .msg-bubble {
+    padding: 10px 14px;
+    border-radius: 16px;
+    max-width: 75%;
+    font-size: 14px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    position: relative;
+    transition: all 0.2s ease;
+  }
+
+  .msg-bubble.user {
+    background: linear-gradient(135deg, #4f8ef7, #1e3566);
+    color: white;
+    border-bottom-right-radius: 6px;
+  }
+
+  .msg-bubble.ai {
+    background: #151820;
+    color: #e8eaf0;
+    border: 1px solid #2e3650;
+    border-bottom-left-radius: 6px;
+  }
+
+  /* ================= INPUT FIELD ================= */
+  .chat-input {
+    border-radius: 999px !important;
+    border: 1px solid #2e3650 !important;
+    padding: 10px 14px;
+    background-color: #0d0f14 !important;
+    color: #e8eaf0 !important;
+    transition: all 0.2s ease;
+    outline: none !important;
+    box-shadow: none !important;
+  }
+
+  .chat-input:focus {
+    border-color: #4f8ef7 !important;
+    box-shadow: 0 0 0 1.5px rgba(79,142,247,0.35) !important;
+  }
+
+  .chat-input::placeholder {
+    color: #5c6480;
+  }
+
+  /* ================= FORCE OVERRIDE BOOTSTRAP ================= */
+  input.form-control.chat-input:focus {
+    box-shadow: 0 0 0 1.5px rgba(79,142,247,0.35) !important;
+    border-color: #4f8ef7 !important;
+  }
+
+  /* ================= SMALL POLISH ================= */
+  .msg-bubble:hover {
+    transform: translateY(-1px);
+  }
+
+  :global(.dark) .my-btn {
+    background-image: linear-gradient(#1a1a1a, #1a1a1a), 
+      linear-gradient(137.48deg, #4f8ef7 10%, #8ab4ff 45%, #2e3650 67%, #1e3566 87%);
+  }
+`}</style>
+        {/* linear-gradient(137.48deg, #ffdb3b 10%, #fe53bb 45%, #8f51ea 67%, #0044ff 87%); */}
         <button onClick={toggleChat} className="my-btn">
           <div className="my-container-stars">
             <div className="my-stars"></div>
@@ -357,10 +437,7 @@ const ChatComponent = () => {
                       className={`d-flex ${message.sender === 'user' ? 'justify-content-end' : 'justify-content-start'}`}
                     >
                       <div
-                        className={`p-3 rounded-3 mw-75 ${message.sender === 'user'
-                          ? 'bg-primary text-white'
-                          : 'bg-light'
-                          }`}
+                        className={`msg-bubble ${message.sender === 'user' ? 'user' : 'ai'}`}
                       // style={{ backgroundColor:message.sender === 'user'? "blue":"white",color:message.sender === 'user'? "white":"black" }}
                       >
                         {message.sender === 'ai' ? (
@@ -383,7 +460,7 @@ const ChatComponent = () => {
                     value={inputMessage}
                     onChange={handleInputChange}
                     placeholder="Type your message..."
-                    className="form-control"
+                    className="form-control chat-input"
                   />
                   {/* <button type="submit" className="btn btn-primary px-3">
                     <Send className="small" style={{ width: '1rem', height: '1rem' }} />
@@ -492,7 +569,7 @@ const LoadingAnimation = () => (
 
 function extractCode(htmlContent) {
   // Extract the text content of each line with the 'view-line' class
-  
+
   const code = Array.from(htmlContent)
     .map((line) => line.textContent || '') // Ensure textContent is not null
     .join('\n');

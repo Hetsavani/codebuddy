@@ -4,10 +4,15 @@ import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Moon, Sun, Send, X } from 'lucide-react'
 import { GoogleGenerativeAI } from '@google/generative-ai'
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { SYSTEM_PROMPT } from './constants/prompt'
 const ChatComponent = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState([])
+  const [displayText, setDisplayText] = useState('');
   const [inputMessage, setInputMessage] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isDarkMode, setIsDarkMode] = useState(false)
@@ -45,6 +50,12 @@ const ChatComponent = () => {
       );
     }
   }, []);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' })
+    }
+  }, [messages, isLoading, displayText])
 
   useEffect(() => {
     if (!apiKey || !modelName) return;
@@ -102,7 +113,9 @@ const ChatComponent = () => {
         );
         const text = result.response.text();
 
-        setMessages(prev => [...prev, { text, sender: 'ai' }]);
+        // setMessages(prev => [...prev, { text, sender: 'ai' }]);
+        // const aiText = result.response.text();
+        typeAssistantMessage(text);
         setIsLoading(false)
       } catch (err) {
         console.error(err);
@@ -118,6 +131,34 @@ const ChatComponent = () => {
     setIsDarkMode(!isDarkMode)
   }
 
+  const typeAssistantMessage = (text) => {
+    let index = 0;
+
+    const newMsg = { sender: "ai", text: "" };
+
+    setMessages((prev) => [...prev, newMsg]);
+
+    const length = text.length;
+
+    let speed = 20;
+    if (length > 400) speed = 5;
+    else if (length > 200) speed = 10;
+    else if (length > 100) speed = 15;
+
+    const interval = setInterval(() => {
+      index++;
+
+      setMessages((prev) => {
+        const updated = [...prev];
+        updated[updated.length - 1].text = text.slice(0, index);
+        return updated;
+      });
+
+      if (index >= text.length) {
+        clearInterval(interval);
+      }
+    }, speed);
+  };
 
   const Loader = () => {
     const lineStyle = (width) => ({
@@ -303,6 +344,34 @@ const ChatComponent = () => {
     opacity: 0.5;
   }
 
+  /* Code block wrapper */
+.msg-bubble.ai pre {
+  background: #0d1117 !important;
+  color: #e6edf3 !important;
+  padding: 12px 14px;
+  border-radius: 10px;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 8px 0;
+}
+
+/* Remove inner code bg (important fix) */
+.msg-bubble.ai pre code {
+  background: transparent !important;
+  color: inherit !important;
+  padding: 0;
+  font-family: 'Fira Code', monospace;
+}
+
+/* Inline code */
+.msg-bubble.ai code {
+  background: rgba(255,255,255,0.08);
+  padding: 2px 6px;
+  border-radius: 5px;
+  font-size: 12px;
+}
+
   /* ================= Brand Text ================= */
     .brand-name {
     line-height: 1;
@@ -389,6 +458,20 @@ const ChatComponent = () => {
     transform: translateY(-1px);
   }
 
+  /* ================= SCROLLBAR ================= */
+  /* Firefox */
+scrollbar-color: rgba(79,142,247,0.6) rgba(30,53,102,0.2);
+
+/* Chrome/Safari */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-thumb { 
+  background: rgba(79,142,247,0.6);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover { 
+  background: rgba(79,142,247,0.8);
+}
+
   :global(.dark) .my-btn {
     background-image: linear-gradient(#1a1a1a, #1a1a1a), 
       linear-gradient(137.48deg, #4f8ef7 10%, #8ab4ff 45%, #2e3650 67%, #1e3566 87%);
@@ -454,11 +537,11 @@ const ChatComponent = () => {
                         className={`msg-bubble ${message.sender === 'user' ? 'user' : 'ai'}`}
                       // style={{ backgroundColor:message.sender === 'user'? "blue":"white",color:message.sender === 'user'? "white":"black" }}
                       >
-                        {message.sender === 'ai' ? (
-                          <TypewriterEffect text={message.text} />
-                        ) : (
-                          message.text
-                        )}
+                       {message.sender === 'ai' ? (
+  <MarkdownRenderer content={message.text} />
+) : (
+  message.text
+)}
                       </div>
                     </motion.div>
                   ))}
@@ -504,15 +587,14 @@ const ChatComponent = () => {
   )
 }
 
-const TypewriterEffect = ({ text }) => {
-  const [displayText, setDisplayText] = useState('');
+const TypewriterEffect = ({ text, displayText, setDisplayText }) => {
   const index = useRef(0);
 
   // Function to calculate typing speed based on text length
   const getTypingSpeed = (length) => {
-    if (length <= 100) return 70; // Fast for short texts
-    if (length <= 300) return 30; // Medium speed for medium texts
-    return 10; // Slow for long texts
+    if (length <= 100) return 60;
+    if (length <= 300) return 20;
+    return 10;
   };
 
   const typingSpeed = getTypingSpeed(text.length);
@@ -591,5 +673,39 @@ function extractCode(htmlContent) {
   return code;
 }
 
+
+const MarkdownRenderer = ({ content }) => {
+  return (
+    <ReactMarkdown
+      remarkPlugins={[remarkGfm]}
+      components={{
+        code({ node, inline, className, children, ...props }) {
+          const match = /language-(\w+)/.exec(className || '');
+
+          return !inline && match ? (
+            <SyntaxHighlighter
+              style={oneDark}
+              language={match[1]}
+              PreTag="div"
+              customStyle={{
+                borderRadius: "10px",
+                padding: "12px",
+                fontSize: "13px"
+              }}
+            >
+              {String(children).replace(/\n$/, '')}
+            </SyntaxHighlighter>
+          ) : (
+            <code className={className} {...props}>
+              {children}
+            </code>
+          );
+        }
+      }}
+    >
+      {content}
+    </ReactMarkdown>
+  );
+};
 
 export default ChatComponent

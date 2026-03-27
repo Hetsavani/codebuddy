@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Moon, Sun, Send, X } from 'lucide-react'
+import { Moon, Sun, Send, X, Copy, Check, SquareArrowOutUpLeft } from 'lucide-react'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -443,6 +443,21 @@ const ChatComponent = () => {
     box-shadow: 0 0 0 1.5px ${isDarkMode ? "rgba(79,142,247,0.35)" : "rgba(42, 42, 42, 0.35)"} !important;
   }
 
+  .code-btn {
+  background: rgba(30, 53, 102, 0.8);
+  border: 1px solid #2e3650;
+  color: #e8eaf0;
+  padding: 5px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.code-btn:hover {
+  background: #4f8ef7;
+  color: white;
+}
+
   .chat-input::placeholder {
     color: #5c6480;
   }
@@ -537,11 +552,11 @@ scrollbar-color: rgba(79,142,247,0.6) rgba(30,53,102,0.2);
                         className={`msg-bubble ${message.sender === 'user' ? 'user' : 'ai'}`}
                       // style={{ backgroundColor:message.sender === 'user'? "blue":"white",color:message.sender === 'user'? "white":"black" }}
                       >
-                       {message.sender === 'ai' ? (
-  <MarkdownRenderer content={message.text} />
-) : (
-  message.text
-)}
+                        {message.sender === 'ai' ? (
+                          <MarkdownRenderer content={message.text} />
+                        ) : (
+                          message.text
+                        )}
                       </div>
                     </motion.div>
                   ))}
@@ -674,32 +689,115 @@ function extractCode(htmlContent) {
 }
 
 
+const CodeBlock = ({ language, value }) => {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(value);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+
+  const handleInsert = async (value) => {
+    try {
+      console.log("handleInsert", value);
+      if (typeof value !== "string") {
+        console.error("Invalid value:", value);
+        return;
+      }
+
+      const textarea = document.querySelector('.inputarea');
+
+      if (!textarea) {
+        alert("Click inside editor once and try again");
+        return;
+      }
+
+      // 1. Copy code to clipboard
+      await navigator.clipboard.writeText(value);
+
+      // 2. Focus editor
+      textarea.focus();
+
+      // 3. Select all (Ctrl + A)
+      textarea.dispatchEvent(new KeyboardEvent('keydown', {
+        key: 'a',
+        code: 'KeyA',
+        ctrlKey: true,
+        bubbles: true
+      }));
+
+      // 4. Paste (Ctrl + V)
+      setTimeout(() => {
+        textarea.dispatchEvent(new KeyboardEvent('keydown', {
+          key: 'v',
+          code: 'KeyV',
+          ctrlKey: true,
+          bubbles: true
+        }));
+      }, 50);
+
+    } catch (err) {
+      console.error("Insert failed:", err);
+    }
+  };
+  return (
+    <div style={{ position: "relative" }}>
+      {/* Buttons */}
+      <div style={{
+        position: "absolute",
+        top: "8px",
+        right: "8px",
+        display: "flex",
+        gap: "6px",
+        zIndex: 2
+      }}>
+        <button onClick={handleCopy} className="code-btn">
+          {copied ? <Check size={14} /> : <Copy size={14} />}
+        </button>
+
+        <button onClick={() => { handleInsert(value) }} className="code-btn">
+          <SquareArrowOutUpLeft size={14} />
+        </button>
+      </div>
+
+      {/* Code */}
+      <SyntaxHighlighter
+        style={oneDark}
+        language={language}
+        PreTag="div"
+        customStyle={{
+          borderRadius: "10px",
+          padding: "14px",
+          fontSize: "13px",
+          marginTop: "8px"
+        }}
+      >
+        {value}
+      </SyntaxHighlighter>
+    </div>
+  );
+};
+
 const MarkdownRenderer = ({ content }) => {
   return (
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       components={{
-        code({ node, inline, className, children, ...props }) {
+        code({ inline, className, children }) {
           const match = /language-(\w+)/.exec(className || '');
+          const code = String(children).replace(/\n$/, '');
 
-          return !inline && match ? (
-            <SyntaxHighlighter
-              style={oneDark}
-              language={match[1]}
-              PreTag="div"
-              customStyle={{
-                borderRadius: "10px",
-                padding: "12px",
-                fontSize: "13px"
-              }}
-            >
-              {String(children).replace(/\n$/, '')}
-            </SyntaxHighlighter>
-          ) : (
-            <code className={className} {...props}>
-              {children}
-            </code>
-          );
+          if (!inline && match) {
+            return (
+              <CodeBlock
+                language={match[1]}
+                value={code}
+              />
+            );
+          }
+
+          return <code className={className}>{children}</code>;
         }
       }}
     >

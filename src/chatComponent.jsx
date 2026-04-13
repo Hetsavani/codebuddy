@@ -698,49 +698,15 @@ const CodeBlock = ({ language, value }) => {
     setTimeout(() => setCopied(false), 1500);
   };
 
-  const handleInsert = async (value) => {
+
+  const handleInsert = async (code) => {
     try {
-      console.log("handleInsert", value);
-      if (typeof value !== "string") {
-        console.error("Invalid value:", value);
-        return;
-      }
+      document.dispatchEvent(new CustomEvent("sendChromeData", { detail: { sourceCode: code } }));
 
-      const textarea = document.querySelector('.inputarea');
-
-      if (!textarea) {
-        alert("Click inside editor once and try again");
-        return;
-      }
-
-      // 1. Copy code to clipboard
-      await navigator.clipboard.writeText(value);
-
-      // 2. Focus editor
-      textarea.focus();
-
-      // 3. Select all (Ctrl + A)
-      textarea.dispatchEvent(new KeyboardEvent('keydown', {
-        key: 'a',
-        code: 'KeyA',
-        ctrlKey: true,
-        bubbles: true
-      }));
-
-      // 4. Paste (Ctrl + V)
-      setTimeout(() => {
-        textarea.dispatchEvent(new KeyboardEvent('keydown', {
-          key: 'v',
-          code: 'KeyV',
-          ctrlKey: true,
-          bubbles: true
-        }));
-      }, 50);
-
-    } catch (err) {
-      console.error("Insert failed:", err);
+    } catch (e) {
+      alert('❌ Error occured while inserting code. Please try clicking inside the editor once or refresh and then re-insert. If the problem persists, it might be due to LeetCode page updates breaking the integration. Please report this issue to the extension developer.');
     }
-  };
+  }
   return (
     <div style={{ position: "relative" }}>
       {/* Buttons */}

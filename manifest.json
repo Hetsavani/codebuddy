@@ -6,15 +6,17 @@
   "action": {
     "default_popup": "index.html"
   },
-  "permissions": [
-    "activeTab",
-    "scripting",
-    "storage"
-  ],
+  "permissions": ["activeTab", "scripting", "storage"],
   "content_scripts": [
     {
       "matches": ["https://leetcode.com/problems/*"],
       "js": ["src/content.jsx"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["inject.js"],
+      "matches": ["https://leetcode.com/problems/*"]
     }
   ]
 }

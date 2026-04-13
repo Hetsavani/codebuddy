@@ -27,12 +27,18 @@ function injectStylesIntoShadow(shadowRoot) {
   // Add Bootstrap Icons
   const bootstrapIcons = document.createElement('link');
   bootstrapIcons.href = "https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css";
-  
+
   bootstrapIcons.rel = "stylesheet";
-  
+
   document.body.appendChild(bootstrapIcons);
 }
 
+const script = document.createElement("script");
+script.src = chrome.runtime.getURL("inject.js");
+script.onload = function () {
+  this.remove();
+};
+(document.head || document.documentElement).appendChild(script);
 // Inject styles into the Shadow DOM
 injectStylesIntoShadow(shadowRoot);
 
